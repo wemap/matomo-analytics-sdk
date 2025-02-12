@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "matomo-analytics-sdk"
+dynamic = ["version"]
+description = 'Python sdk for interacting with Matomo Analytics'
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Adrian", email = "adrianruizmora@hotmail.com" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "requests",
+  "responses",
+  "pydantic",
+  "beautifulsoup4",
+]
+
+[project.urls]
+Documentation = "https://github.com/Adrian/matomo-analytics-sdk#readme"
+Issues = "https://github.com/Adrian/matomo-analytics-sdk/issues"
+Source = "https://github.com/Adrian/matomo-analytics-sdk"
+
+[tool.hatch.version]
+path = "src/matomo_analytics_sdk/__about__.py"
+
+[tool.hatch.envs.types]
+extra-dependencies = [
+  "mypy>=1.0.0",
+]
+[tool.hatch.envs.types.scripts]
+check = "mypy --install-types --non-interactive {args:src/matomo_analytics_sdk tests}"
+
+[tool.coverage.run]
+source_pkgs = ["matomo_analytics_sdk", "tests"]
+branch = true
+parallel = true
+omit = [
+  "src/matomo_analytics_sdk/__about__.py",
+]
+
+[tool.coverage.paths]
+matomo_analytics_sdk = ["src/matomo_analytics_sdk", "*/matomo-analytics-sdk/src/matomo_analytics_sdk"]
+tests = ["tests", "*/matomo-analytics-sdk/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
