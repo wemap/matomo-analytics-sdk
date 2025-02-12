@@ -1,6 +1,3 @@
-import json
-import os
-
 import requests
 import responses
 from responses import matchers
@@ -13,7 +10,7 @@ from src.matomo_analytics_sdk.utils import read_json
 
 def test_sdk_client():
     config = Config(
-        base_url="https://analytics.maaap.it", site_id="2", auth_token="random_token"
+        base_url="https://analytics.maaap.it", site_id="2", auth_token="random_token", period="day", date="today"
     )
     client = MatomoClient(config)
     assert client.base_url == config.base_url
@@ -24,7 +21,7 @@ def test_sdk_client():
     assert client.period == "day"
     assert client.date == "today"
     assert client.filter_limit == "100"
-    assert client.format == "JSON"
+    assert client.format == "json"
     assert client.format_metrics == "0"
 
 
@@ -105,7 +102,7 @@ def test_get_module_methods():
 @responses.activate
 def test_events_get_name():
     config = Config(
-        base_url="https://analytics.maaap.it", site_id="2", auth_token="random_token"
+        base_url="https://analytics.maaap.it", site_id="2", auth_token="random_token", period="day", date="today"
     )
     client = MatomoClient(config)
     livemap = "16215"

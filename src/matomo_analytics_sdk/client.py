@@ -36,12 +36,11 @@ class MatomoClient:
         self.base_url = config.base_url.rstrip("/")
         self.site_id = config.site_id
         self.auth_token = config.auth_token
-        self.period = config.period
-        self.date = config.date
         self.format = config.format
-
         self.format_metrics = config.format_metrics
         self.filter_limit = config.filter_limit
+        self.period = config.period
+        self.date = config.date
 
         # Dynamically initialize all available modules
         self.modules = {

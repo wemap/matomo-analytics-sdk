@@ -26,7 +26,7 @@ class MatomoModule:
 
         def api_method(**kwargs):
             return self.client._request(self.module_name, method_name, **kwargs)
-        
+
         return api_method
 
 
@@ -67,8 +67,12 @@ class CustomReports:
         self.client = client
         self.module_name = self.__class__.__name__
 
-    def createCustomReport(self, **kwargs):
-        pass
+    def createCustomReport(self, metrics={}):
+        new_report = {}
+        for key, value in metrics.items():
+            pass
+
+        return metrics
 
     def available_methods(self):
         pass
