@@ -4,15 +4,14 @@ import requests
 from .exceptions import MatomoAPIError, MatomoAuthError, MatomoRequestError
 from .models import Config
 from . import modules
-from .modules import MatomoModule, CustomReports
+from .modules import MatomoModule
 
 HTTP_TIMEOUT_SECONDS = 10
-
+PROTECTED_KEYS = {"base_url", "site_id", "token_auth"}
 # Dynamically discover all classes in the `modules.py` file
 MODULES = [
     getattr(modules, name)
     for name, obj in inspect.getmembers(modules, inspect.isclass)
-    # if issubclass(obj, MatomoModule)
     if obj is not MatomoModule
 ]
 
@@ -22,6 +21,9 @@ def to_snake_case(class_name: str) -> str:
     Convert a class name like 'DevicesDetection' to 'devices_detection'
     without creating an instance.
     """
+    if class_name.isupper():
+        return class_name.lower()
+
     return "".join([f"_{c.lower()}" if c.isupper() else c for c in class_name]).lstrip(
         "_"
     )
@@ -30,23 +32,21 @@ def to_snake_case(class_name: str) -> str:
 class MatomoClient:
     """Main Matomo API client handling authentication and requests."""
 
-    # TODO :
-    # Add properties and serializers
     def __init__(self, config: Config):
         self.base_url = config.base_url.rstrip("/")
         self.site_id = config.site_id
-        self.auth_token = config.auth_token
+        self.token_auth = config.token_auth
         self.format = config.format
         self.format_metrics = config.format_metrics
         self.filter_limit = config.filter_limit
         self.period = config.period
         self.date = config.date
+        self.segment = config.segment
 
         # Dynamically initialize all available modules
         self.modules = {
             to_snake_case(module.__name__): module(self) for module in MODULES
         }
-        self.custom_reports = CustomReports(self)
 
     def __getattr__(self, name):
         """Allow accessing modules as attributes (e.g., client.events)."""
@@ -57,19 +57,29 @@ class MatomoClient:
     def _request(self, module: str, method: str, **kwargs) -> dict:
         """Generic request handler for Matomo API."""
 
-        kwargs = {
+        params = {
             "module": "API",
             "method": f"{module}.{method}",
             "idSite": self.site_id,
-            "token_auth": self.auth_token,
+            "token_auth": self.token_auth,
             "format": self.format,
             "period": self.period,
             "date": self.date,
-        } | (kwargs or {})
+            "segment": self.segment,
+        }
+
+        filtered_kwargs = {}
+        for key, value in kwargs.items():
+            if key in PROTECTED_KEYS:
+                raise ValueError(f"{key} parameter cannot be modified.")
+            else:
+                filtered_kwargs[key] = value
+
+        params.update(filtered_kwargs)
 
         url = f"{self.base_url}/"
         try:
-            response = requests.get(url, params=kwargs, timeout=HTTP_TIMEOUT_SECONDS)
+            response = requests.get(url, params=params, timeout=HTTP_TIMEOUT_SECONDS)
             response.raise_for_status()
             data = response.json()
             if (

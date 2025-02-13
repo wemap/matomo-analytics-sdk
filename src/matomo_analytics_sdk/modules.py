@@ -30,6 +30,45 @@ class MatomoModule:
         return api_method
 
 
+class WemapCustomReports(MatomoModule):
+    """Wemap custom reporting from aggregated data."""
+
+    def createReport(self, metrics={}):
+        new_report = {}
+        for key, value in metrics.items():
+            module_name, method_name = key.split(".")
+
+            if method_name not in available_methods(module_name):
+                raise AttributeError(
+                    f"'{module_name}' module has no method '{method_name}'"
+                )
+
+            response = self.client._request(module_name, method_name, **value)
+
+            if module_name not in new_report:
+                new_report[module_name] = {method_name: response}
+            else:
+                new_report[module_name].update({method_name: response})
+
+        return new_report
+
+    def available_methods(self):
+        """List public methods defined in this subclass."""
+        return [
+            method
+            for method in dir(self)
+            if callable(getattr(self, method))
+            and not method.startswith("_")
+            and method not in dir(MatomoModule)
+        ]
+
+
+class API(MatomoModule):
+    """This API is the Metadata API: it gives information about all other available APIs methods, as well as providing human readable and more complete outputs than normal API methods."""
+
+    pass
+
+
 class DevicesDetection(MatomoModule):
     """The DevicesDetection API lets you access reports on your visitors devices, brands, models, Operating system, Browsers."""
 
@@ -60,19 +99,7 @@ class SegmentEditor(MatomoModule):
     pass
 
 
-class CustomReports:
-    """Wemap custom reporting from aggregated data."""
+class CustomDimensions(MatomoModule):
+    "The Custom Dimensions API lets you manage and access reports for your configured Custom Dimensions."
 
-    def __init__(self, client):
-        self.client = client
-        self.module_name = self.__class__.__name__
-
-    def createCustomReport(self, metrics={}):
-        new_report = {}
-        for key, value in metrics.items():
-            pass
-
-        return metrics
-
-    def available_methods(self):
-        pass
+    pass
