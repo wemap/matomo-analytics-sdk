@@ -12,7 +12,9 @@ PROTECTED_KEYS = {"base_url", "site_id", "token_auth"}
 
 # Configure logging
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 # Dynamically discover all classes in the `modules.py` file
 MODULES = [
@@ -25,7 +27,9 @@ MODULES = [
 def to_snake_case(class_name: str) -> str:
     if class_name.isupper():
         return class_name.lower()
-    return "".join([f"_{c.lower()}" if c.isupper() else c for c in class_name]).lstrip("_")
+    return "".join([f"_{c.lower()}" if c.isupper() else c for c in class_name]).lstrip(
+        "_"
+    )
 
 
 class MatomoClient:
@@ -81,7 +85,7 @@ class MatomoClient:
         params.update(filtered_kwargs)
 
         url = f"{self.base_url}/"
-        
+
         logger.debug(f"Sending request to {url} with params: {params}")
 
         try:
@@ -95,8 +99,12 @@ class MatomoClient:
                 if "authentication failed" in data.get("message", "").lower():
                     logger.error("Authentication error.")
                     raise MatomoAuthError()
-                logger.error(f"Matomo API error: {data.get('message', 'Unknown error')}")
-                raise MatomoAPIError(data.get("message", "Unknown API error"), response.status_code)
+                logger.error(
+                    f"Matomo API error: {data.get('message', 'Unknown error')}"
+                )
+                raise MatomoAPIError(
+                    data.get("message", "Unknown API error"), response.status_code
+                )
 
             return data
         except requests.ConnectionError:

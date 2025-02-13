@@ -3,6 +3,7 @@ from .utils import available_methods
 
 logger = logging.getLogger(__name__)
 
+
 class MatomoModule:
     """Generic Matomo module class that dynamically maps API methods."""
 
@@ -21,10 +22,14 @@ class MatomoModule:
         """Dynamically call API methods."""
 
         if method_name not in available_methods(self.module_name):
-            raise AttributeError(f"'{self.module_name}' module has no method '{method_name}'")
+            raise AttributeError(
+                f"'{self.module_name}' module has no method '{method_name}'"
+            )
 
         def api_method(**kwargs):
-            logger.debug(f"Calling method '{method_name}' on module '{self.module_name}' with params: {kwargs}")
+            logger.debug(
+                f"Calling method '{method_name}' on module '{self.module_name}' with params: {kwargs}"
+            )
             return self.client._request(self.module_name, method_name, **kwargs)
 
         return api_method
