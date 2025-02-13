@@ -1,5 +1,6 @@
 import inspect
 import requests
+import logging
 
 from .exceptions import MatomoAPIError, MatomoAuthError, MatomoRequestError
 from .models import Config
@@ -8,6 +9,11 @@ from .modules import MatomoModule
 
 HTTP_TIMEOUT_SECONDS = 10
 PROTECTED_KEYS = {"base_url", "site_id", "token_auth"}
+
+# Configure logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 # Dynamically discover all classes in the `modules.py` file
 MODULES = [
     getattr(modules, name)
@@ -17,22 +23,15 @@ MODULES = [
 
 
 def to_snake_case(class_name: str) -> str:
-    """
-    Convert a class name like 'DevicesDetection' to 'devices_detection'
-    without creating an instance.
-    """
     if class_name.isupper():
         return class_name.lower()
-
-    return "".join([f"_{c.lower()}" if c.isupper() else c for c in class_name]).lstrip(
-        "_"
-    )
+    return "".join([f"_{c.lower()}" if c.isupper() else c for c in class_name]).lstrip("_")
 
 
 class MatomoClient:
     """Main Matomo API client handling authentication and requests."""
 
-    def __init__(self, config: Config):
+    def __init__(self, config: Config, verbose=False):
         self.base_url = config.base_url.rstrip("/")
         self.site_id = config.site_id
         self.token_auth = config.token_auth
@@ -42,6 +41,12 @@ class MatomoClient:
         self.period = config.period
         self.date = config.date
         self.segment = config.segment
+        self.verbose = verbose
+
+        if verbose:
+            logger.setLevel(logging.DEBUG)
+
+        logger.info("MatomoClient initialized.")
 
         # Dynamically initialize all available modules
         self.modules = {
@@ -49,7 +54,6 @@ class MatomoClient:
         }
 
     def __getattr__(self, name):
-        """Allow accessing modules as attributes (e.g., client.events)."""
         if name in self.modules:
             return self.modules[name]
         raise AttributeError(f"'{self.__class__.__name__}' has no module '{name}'")
@@ -72,37 +76,41 @@ class MatomoClient:
         for key, value in kwargs.items():
             if key in PROTECTED_KEYS:
                 raise ValueError(f"{key} parameter cannot be modified.")
-            else:
-                filtered_kwargs[key] = value
+            filtered_kwargs[key] = value
 
         params.update(filtered_kwargs)
 
         url = f"{self.base_url}/"
+        
+        logger.debug(f"Sending request to {url} with params: {params}")
+
         try:
             response = requests.get(url, params=params, timeout=HTTP_TIMEOUT_SECONDS)
             response.raise_for_status()
             data = response.json()
-            if (
-                isinstance(data, dict)
-                and "result" in data
-                and data["result"] == "error"
-            ):
-                if (
-                    "message" in data
-                    and "authentication failed" in data["message"].lower()
-                ):
+
+            logger.debug(f"Response received: {data}")
+
+            if isinstance(data, dict) and data.get("result") == "error":
+                if "authentication failed" in data.get("message", "").lower():
+                    logger.error("Authentication error.")
                     raise MatomoAuthError()
-                raise MatomoAPIError(
-                    data.get("message", "Unknown API error"), response.status_code
-                )
+                logger.error(f"Matomo API error: {data.get('message', 'Unknown error')}")
+                raise MatomoAPIError(data.get("message", "Unknown API error"), response.status_code)
 
             return data
         except requests.ConnectionError:
-            raise MatomoRequestError("Failed to connect to Matomo server")
+            err_msg = "Failed to connect to Matomo server"
+            logger.error(err_msg)
+            raise MatomoRequestError(err_msg)
         except requests.Timeout:
-            raise MatomoRequestError("Matomo request timed out")
+            err_msg = "Matomo request timed out"
+            logger.error(err_msg)
+            raise MatomoRequestError(err_msg)
         except requests.RequestException as e:
-            raise MatomoRequestError(f"Matomo request failed: {e}")
+            err_msg = "Matomo request failed:"
+            logger.error(f"{err_msg} {e}")
+            raise MatomoRequestError(f"{err_msg} {e}")
 
     @classmethod
     def available_modules(cls):
