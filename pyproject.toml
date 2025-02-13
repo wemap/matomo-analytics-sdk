@@ -29,6 +29,7 @@ dependencies = [
   "responses",
   "pydantic",
   "beautifulsoup4",
+  "setuptools"
 ]
 
 [project.urls]
@@ -63,4 +64,13 @@ exclude_lines = [
   "no cov",
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+include = [
+    "src/matomo_analytics_sdk/**/*.py",
+    "src/matomo_analytics_sdk/files/*.json"
 ]

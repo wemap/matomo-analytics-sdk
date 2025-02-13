@@ -1,3 +1,6 @@
+import json
+import os
+
 import requests
 import responses
 from responses import matchers
@@ -6,7 +9,12 @@ from pydantic import ValidationError
 from src.matomo_analytics_sdk.client import MatomoClient
 from src.matomo_analytics_sdk.models import Config
 from src.matomo_analytics_sdk.exceptions import MatomoRequestError
-from src.matomo_analytics_sdk.utils import read_json
+
+
+def read_json(rel_path):
+    abs_file_path = os.path.abspath(rel_path)
+    with open(abs_file_path, "r") as file:
+        return json.load(file)
 
 
 def test_client():

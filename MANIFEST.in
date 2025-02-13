@@ -1,0 +1,4 @@
+include LICENSE.txt
+include README.md
+recursive-exclude * __pycache__
+include src/matomo_analytics_sdk/files/available_modules.json

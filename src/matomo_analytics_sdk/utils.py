@@ -1,17 +1,20 @@
-import requests
-from bs4 import BeautifulSoup
 import json
 import os
+import pkg_resources
+
+import requests
+from bs4 import BeautifulSoup
+
 
 MATOMO_API_DOC_URL = "https://developer.matomo.org/api-reference/reporting-api"
-MODULES_AND_METHODS = "src/matomo_analytics_sdk/files/available_modules.json"
-
+MODULES_AND_METHODS = "files/available_modules.json"
 
 def read_json(rel_path):
-    abs_file_path = os.path.abspath(rel_path)
-    with open(abs_file_path, "r") as file:
+    resource_path = pkg_resources.resource_filename(
+        'matomo_analytics_sdk', rel_path
+    )
+    with open(resource_path, "r") as file:
         return json.load(file)
-
 
 def write_json(rel_path, data):
     abs_file_path = os.path.abspath(rel_path)
