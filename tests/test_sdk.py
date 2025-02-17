@@ -156,9 +156,9 @@ def test_events_get_name():
     }
 
     responses.add(
-        responses.GET,
+        responses.POST,
         client.base_url,
-        match=[matchers.query_param_matcher(params)],
+        match=[matchers.urlencoded_params_matcher(params)],
         json=read_json("tests/files/Events_getName.json"),
         status=200,
     )
@@ -217,14 +217,14 @@ def test_wemap_custom_report():
         }
 
         if method == "CustomDimensions.getCustomDimension":
-            params.update({"idDimension": 3})
+            params.update({"idDimension": "3"})
 
         file_name = "_".join(method.split("."))
 
         responses.add(
-            responses.GET,
+            responses.POST,
             client.base_url,
-            match=[matchers.query_param_matcher(params)],
+            match=[matchers.urlencoded_params_matcher(params)],
             json=read_json(f"tests/files/{file_name}.json"),
             status=200,
         )

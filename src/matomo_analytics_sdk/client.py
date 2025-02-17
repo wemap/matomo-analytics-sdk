@@ -46,6 +46,7 @@ class MatomoClient:
         self.date = config.date
         self.segment = config.segment
         self.verbose = verbose
+        self._config = config
 
         if verbose:
             logger.setLevel(logging.DEBUG)
@@ -56,8 +57,14 @@ class MatomoClient:
         self.modules = {
             to_snake_case(module.__name__): module(self) for module in MODULES
         }
+    
+    @property
+    def config(self):
+        return self._config
 
     def __getattr__(self, name):
+        if name in self.__dict__:
+            return self.__dict__[name]
         if name in self.modules:
             return self.modules[name]
         raise AttributeError(f"'{self.__class__.__name__}' has no module '{name}'")
@@ -65,7 +72,7 @@ class MatomoClient:
     def _request(self, module: str, method: str, **kwargs) -> dict:
         """Generic request handler for Matomo API."""
 
-        params = {
+        data = {
             "module": "API",
             "method": f"{module}.{method}",
             "idSite": self.site_id,
@@ -82,14 +89,14 @@ class MatomoClient:
                 raise ValueError(f"{key} parameter cannot be modified.")
             filtered_kwargs[key] = value
 
-        params.update(filtered_kwargs)
+        data.update(filtered_kwargs)
 
         url = f"{self.base_url}/"
 
-        logger.debug(f"Sending request to {url} with params: {params}")
+        logger.debug(f"Sending request to {url} with data: {data}")
 
         try:
-            response = requests.get(url, params=params, timeout=HTTP_TIMEOUT_SECONDS)
+            response = requests.post(url, data=data, timeout=HTTP_TIMEOUT_SECONDS)
             response.raise_for_status()
             data = response.json()
 
