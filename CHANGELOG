@@ -1,0 +1,23 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+### Added
+- 
+
+### Changed
+- 
+
+### Fixed
+- Validating metrics parameter before trying to create wemap custom report. Raises ValueError exception.
+
+### Removed
+- 
+
+---
+
+## [v1.0.0] - 2025-02-17
+### Added
+- Initial release of the project.
+- Implemented core features such as [client config, exceptions, and 7 matomo modules].

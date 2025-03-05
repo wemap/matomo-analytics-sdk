@@ -38,7 +38,13 @@ class MatomoModule:
 class WemapCustomReports(MatomoModule):
     """Wemap custom reporting from aggregated data."""
 
-    def createReport(self, metrics={}):
+    def createReport(self, metrics):
+
+        if not metrics or not isinstance(metrics, dict):
+            raise ValueError(
+                "Empty or invalid data: Please provide a dictionary containing the expected key-value pairs."
+            )
+
         new_report = {}
         for key, value in metrics.items():
             module_name, method_name = key.split(".")
