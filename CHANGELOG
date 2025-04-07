@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+## [v1.0.1] - 2025-04-07
 ### Added
 - 
 
@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - Validating metrics parameter before trying to create wemap custom report. Raises ValueError exception.
 
 ### Removed
-- 
+- site_id is optional parameter when initializing client.
 
 ---
 

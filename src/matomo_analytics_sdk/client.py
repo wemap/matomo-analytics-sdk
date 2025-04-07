@@ -8,7 +8,7 @@ from . import modules
 from .modules import MatomoModule
 
 HTTP_TIMEOUT_SECONDS = 10
-PROTECTED_KEYS = {"base_url", "site_id", "token_auth"}
+PROTECTED_KEYS = {"base_url", "token_auth"}
 
 # Configure logging
 logger = logging.getLogger(__name__)
