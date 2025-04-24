@@ -39,29 +39,35 @@ class WemapCustomReports(MatomoModule):
     """Wemap custom reporting from aggregated data."""
 
     def createReport(self, metrics):
+        if not metrics or not isinstance(metrics, list):
+            raise ValueError("Expected a non-empty list of metric definitions.")
 
-        if not metrics or not isinstance(metrics, dict):
-            raise ValueError(
-                "Empty or invalid data: Please provide a dictionary containing the expected key-value pairs."
-            )
+        report = []
 
-        new_report = {}
-        for key, value in metrics.items():
-            module_name, method_name = key.split(".")
+        for metric in metrics:
+            method = metric.get("method")
+            if not method:
+                raise ValueError("Each metric must include a 'method' key.")
+
+            module_name, method_name = method.split(".")
 
             if method_name not in available_methods(module_name):
-                raise AttributeError(
-                    f"'{module_name}' module has no method '{method_name}'"
-                )
+                raise AttributeError(f"'{module_name}' module has no method '{method_name}'")
 
-            response = self.client._request(module_name, method_name, **value)
+            # Extract kwargs to pass to the actual request
+            kwargs = {k: v for k, v in metric.items() if k != "method"}
 
-            if module_name not in new_report:
-                new_report[module_name] = {method_name: response}
-            else:
-                new_report[module_name].update({method_name: response})
+            # Perform request
+            response = self.client._request(module_name, method_name, **kwargs)
 
-        return new_report
+            # Add response to unified report format
+            report.append({
+                "method": method,
+                **kwargs,  # this will include period, date, segment, etc.
+                "data": response
+            })
+
+        return {"report": report}
 
     def available_methods(self):
         """List public methods defined in this subclass."""

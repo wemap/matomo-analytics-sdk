@@ -1,0 +1,67 @@
+[
+    {
+        "label": "pinpoint",
+        "nb_visits": 90,
+        "nb_events": 110,
+        "nb_events_with_value": 110,
+        "sum_event_value": 0,
+        "min_event_value": 0,
+        "max_event_value": false,
+        "sum_daily_nb_uniq_visitors": 90,
+        "avg_event_value": 0,
+        "segment": "eventCategory==pinpoint",
+        "idsubdatatable": 2
+    },
+    {
+        "label": "map",
+        "nb_visits": 27,
+        "nb_events": 84,
+        "nb_events_with_value": 84,
+        "sum_event_value": 0,
+        "min_event_value": 0,
+        "max_event_value": false,
+        "sum_daily_nb_uniq_visitors": 22,
+        "avg_event_value": 0,
+        "segment": "eventCategory==map",
+        "idsubdatatable": 1
+    },
+    {
+        "label": "search",
+        "nb_visits": 27,
+        "nb_events": 54,
+        "nb_events_with_value": 54,
+        "sum_event_value": 0,
+        "min_event_value": 0,
+        "max_event_value": false,
+        "sum_daily_nb_uniq_visitors": 27,
+        "avg_event_value": 0,
+        "segment": "eventCategory==search",
+        "idsubdatatable": 3
+    },
+    {
+        "label": "SDK",
+        "nb_visits": 20,
+        "nb_events": 96,
+        "nb_events_with_value": 96,
+        "sum_event_value": 0,
+        "min_event_value": 0,
+        "max_event_value": false,
+        "sum_daily_nb_uniq_visitors": 18,
+        "avg_event_value": 0,
+        "segment": "eventCategory==SDK",
+        "idsubdatatable": 4
+    },
+    {
+        "label": "perfs",
+        "nb_visits": 12,
+        "nb_events": 12,
+        "nb_events_with_value": 12,
+        "sum_event_value": 0,
+        "min_event_value": 0,
+        "max_event_value": false,
+        "sum_daily_nb_uniq_visitors": 12,
+        "avg_event_value": 0,
+        "segment": "eventCategory==perfs",
+        "idsubdatatable": 5
+    }
+]

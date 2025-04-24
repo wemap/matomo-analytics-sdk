@@ -180,46 +180,100 @@ def test_events_get_name():
 
 @responses.activate
 def test_wemap_custom_report():
-    livemap = "16215"
+    livemap = "18411"
     segment = f"dimension2=={livemap}"
 
     config = Config(
         base_url="https://analytics.maaap.it",
         site_id="2",
         token_auth="random_token",
-        period="day",
-        date="2024-01-01,2024-01-02",
+        date="2025-03-01,2025-04-15",
         segment=segment,
     )
     client = MatomoClient(config)
 
-    methods = {
-        "API.get": {},
-        "Events.getName": {},
-        "Events.getAction": {},
-        "Events.getCategory": {},
-        "Referrers.getReferrerType": {},
-        "DevicesDetection.getType": {},
-        "UserCountry.getCity": {},
-        "CustomDimensions.getCustomDimension": {"idDimension": 3},
-    }
+    modules = [
+            {
+                "method": "API.get",
+                "period": "day",
+            },
+            {
+                "method": "Events.getAction",
+                "period": "day",
+                "flat": "1",
+                "secondaryDimension": "eventCategory",
+            },
+            {
+                "method": "Events.getName",
+                "period": "range",
+                "segment": f"dimension2=={livemap};eventCategory==search;eventAction==update",
+                "secondaryDimension": "eventAction",
+            },
+            {
+                "method": "Events.getName",
+                "period": "range",
+                "segment": f"dimension2=={livemap};eventCategory==pinpoint;eventAction==open",
+                "secondaryDimension": "eventAction",
+            },
+            {
+                "method": "Events.getName",
+                "period": "range",
+                "segment": f"dimension2=={livemap};eventCategory==event;eventAction==open",
+                "secondaryDimension": "eventAction",
+            },
+            {
+                "method": "API.get",
+                "period": "range",
+            },
+            {
+                "method": "Events.getName",
+                "period": "range",
+            },
+            {
+                "method": "Events.getAction",
+                "period": "range",
+            },
+            {
+                "method": "Events.getCategory",
+                "period": "range",
+            },
+            {
+                "method": "Referrers.getReferrerType",
+                "period": "range",
+            },
+            {
+                "method": "DevicesDetection.getType",
+                "period": "range",
+            },
+            {
+                "method": "UserCountry.getCity",
+                "period": "range",
+            },
+            {
+                "method": "CustomDimensions.getCustomDimension",
+                "period": "range",
+                "idDimension": '3',
+            },
+    ]
 
-    for method, arguments in methods.items():
+    for i, module in enumerate(modules):
+        method = module["method"]
+        kwargs = {k: v for k, v in module.items() if k != "method"}  
+    
         params = {
             "module": "API",
             "method": method,
             "idSite": client.site_id,
             "token_auth": client.token_auth,
             "format": client.format,
-            "period": client.period,
             "date": client.date,
             "segment": segment,
         }
 
-        if method == "CustomDimensions.getCustomDimension":
-            params.update({"idDimension": "3"})
+        params.update(kwargs)
 
-        file_name = "_".join(method.split("."))
+
+        file_name = f"""{i}_{"_".join(module["method"].split("."))}"""
 
         responses.add(
             responses.POST,
@@ -230,36 +284,32 @@ def test_wemap_custom_report():
         )
 
     wemap_reports = client.wemap_custom_reports
-    new_report = wemap_reports.createReport(methods)
-
+    new_report = wemap_reports.createReport(modules)["report"]
+    
     assert True, {
-        "Events",
-        "API",
-        "Referrers",
-        "DevicesDetection",
-        "UserCountry",
-        "CustomDimensions",
-    }.intersection(new_report.keys())
+        "Events.getName",
+        "Events.getAction",
+        "Events.getCategory"
+        "API.get",
+        "Referrers.getReferrerType",
+        "DevicesDetection.getType",
+        "UserCountry.getCity",
+        "CustomDimensions.getCustomDimension",
+    }.intersection(set([module["method"] for module in new_report]))
 
-    assert new_report["Events"]["getName"]["2024-01-01"][1]["label"] == "kiosk"
-    assert new_report["Events"]["getAction"]["2024-01-01"][0]["label"] == "update"
-    assert new_report["API"]["get"]["2024-01-01"]["nb_uniq_visitors"] == 5
-    assert (
-        new_report["Referrers"]["getReferrerType"]["2024-01-01"][0]["label"]
-        == "Entr\u00e9es directes"
-    )
-    assert (
-        new_report["DevicesDetection"]["getType"]["2024-01-01"][0]["label"]
-        == "Tablette"
-    )
-    assert (
-        new_report["UserCountry"]["getCity"]["2024-01-01"][0]["label"]
-        == "Marseille, France"
-    )
-    assert (
-        new_report["CustomDimensions"]["getCustomDimension"]["2024-01-01"][0]["label"]
-        == "hdv_direction_gare"
-    )
+    assert new_report[0]["method"] == "API.get"
+    assert new_report[0]["period"] == "day"
+    assert new_report[0]["data"]["2025-03-03"]["nb_uniq_visitors"] == 1
+
+    assert new_report[2]["method"] == "Events.getName"
+    assert new_report[2]["period"] == "range"
+    assert new_report[2]["segment"] == "dimension2==18411;eventCategory==search;eventAction==update"
+    assert new_report[2]["data"][1]["nb_visits"] == 3
+    
+    assert new_report[4]["method"] == "Events.getName"
+    assert new_report[4]["period"] == "range"
+    assert new_report[4]["segment"] == "dimension2==18411;eventCategory==event;eventAction==open"
+    assert new_report[4]["data"] == []
 
 
 def test_protected_keys():
@@ -267,9 +317,13 @@ def test_protected_keys():
         base_url="https://analytics.maaap.it", site_id="2", token_auth="random_token"
     )
     client = MatomoClient(config)
-    methods = {
-        "Events.getName": {"base_url": "https://google.com", "token_auth": "12345"},
-    }
+    methods = [
+        {
+            "method": "Events.getName",
+            "base_url": "https://google.com",
+            "token_auth": "12345",
+        }
+    ]
 
     wemap_reports = client.wemap_custom_reports
     try:

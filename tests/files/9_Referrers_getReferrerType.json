@@ -1,0 +1,43 @@
+[
+    {
+        "label": "Direct Entry",
+        "nb_visits": 14,
+        "nb_actions": 380,
+        "max_actions": 119,
+        "sum_visit_length": 4957,
+        "bounce_count": 1,
+        "nb_visits_converted": 0,
+        "sum_daily_nb_uniq_visitors": 12,
+        "sum_daily_nb_users": 0,
+        "segment": "referrerType==direct",
+        "referrer_type": 1
+    },
+    {
+        "label": "Websites",
+        "nb_visits": 14,
+        "nb_actions": 293,
+        "max_actions": 59,
+        "sum_visit_length": 15871,
+        "bounce_count": 0,
+        "nb_visits_converted": 0,
+        "sum_daily_nb_uniq_visitors": 11,
+        "sum_daily_nb_users": 0,
+        "segment": "referrerType==website",
+        "referrer_type": 3,
+        "idsubdatatable": 3
+    },
+    {
+        "label": "Search Engines",
+        "nb_visits": 1,
+        "nb_actions": 4,
+        "max_actions": 4,
+        "sum_visit_length": 6,
+        "bounce_count": 0,
+        "nb_visits_converted": 0,
+        "sum_daily_nb_uniq_visitors": 1,
+        "sum_daily_nb_users": 0,
+        "segment": "referrerType==search",
+        "referrer_type": 2,
+        "idsubdatatable": 2
+    }
+]
