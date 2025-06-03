@@ -284,7 +284,7 @@ def test_wemap_custom_report():
         )
 
     wemap_reports = client.wemap_custom_reports
-    new_report = wemap_reports.createReport(modules)["report"]
+    new_report = wemap_reports.getReport(modules)["report"]
     
     assert True, {
         "Events.getName",
@@ -327,7 +327,7 @@ def test_protected_keys():
 
     wemap_reports = client.wemap_custom_reports
     try:
-        new_report = wemap_reports.createReport(methods)
+        new_report = wemap_reports.getReport(methods)
     except ValueError as err:
         assert "base_url parameter cannot be modified." in str(err)
 

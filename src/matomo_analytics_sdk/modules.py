@@ -38,7 +38,7 @@ class MatomoModule:
 class WemapCustomReports(MatomoModule):
     """Wemap custom reporting from aggregated data."""
 
-    def createReport(self, metrics):
+    def getReport(self, metrics):
         if not metrics or not isinstance(metrics, list):
             raise ValueError("Expected a non-empty list of metric definitions.")
 

@@ -72,7 +72,7 @@ metrics = {
     "VisitsSummary.get": {},
     "Actions.get": {}
 }
-response = client.wemap_custom_reports.createReport(metrics=metrics)
+response = client.wemap_custom_reports.getReport(metrics=metrics)
 ```
 
 ## Error Handling
