@@ -2,7 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
-## [v1.0.2] - 2025-04-07
+## [v1.0.4] - 2025-06-05
+### Added
+-
+
+### Changed
+-
+
+### Fixed
+- Accepts string and integers on site_id initialisation
+
+---
+
+## [v1.0.3] - 2025-06-03
+### Added
+-
+
+### Changed
+- Renaming of custom module createReport to getReport
+
+### Fixed
+-
+
+---
+
+## [v1.0.2] - 2025-04-24
 ### Added
 - New files for test mocking
 
@@ -12,6 +36,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - reintegration of site_id as protected key
+
+---
 
 ## [v1.0.1] - 2025-04-07
 ### Added

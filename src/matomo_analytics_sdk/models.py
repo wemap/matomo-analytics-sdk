@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic.dataclasses import dataclass
 
@@ -6,7 +6,7 @@ from pydantic.dataclasses import dataclass
 @dataclass
 class Config:
     base_url: str
-    site_id: str
+    site_id: Union[int, str]
     token_auth: str
     period: Optional[str] = None
     date: Optional[str] = None
